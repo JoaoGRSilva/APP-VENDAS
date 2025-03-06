@@ -1,18 +1,23 @@
 from PySide6 import QtCore, QtWidgets, QtGui
-from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QHBoxLayout, QFrame
+from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QHBoxLayout, QFrame, QMessageBox
 from PySide6.QtCore import Qt
-import sys
-from logica import on_limpar, on_pesquisar
+from logica import buscar_dados_no_parquet
 
+class QHLine(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)
+        self.setStyleSheet("background-color: white; height: 2px;")
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-        
+
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(5)
-        
+
         # Widgets
         self.label_cpf = QLabel('Digite o CPF:')
         self.label_cpf.setAlignment(Qt.AlignBottom)
@@ -22,29 +27,43 @@ class MyWidget(QtWidgets.QWidget):
         self.label_seguros = QLabel('Seguros')
         self.label_assist = QLabel('Assistências')
 
-
+        # Criando os quadros individuais para usar nas verificações
         self.square_prot = QFrame()
-        self.square_prot.setFixedSize(25,25)
-        self.label_prot_completa = QLabel('SEGURO PROTEÇÃO COMPLETA')
-
         self.square_acid = QFrame()
-        self.square_acid.setFixedSize(25,25)
-        self.label_aci_pessoal = QLabel('ACIDENTE PESSOAL COMPLETO')
-
         self.square_tranq = QFrame()
-        self.square_tranq.setFixedSize(25,25)
-        self.label_tranq = QLabel('TRANQUILIDADE PREMIADA')
-
         self.square_resid = QFrame()
-        self.square_resid.setFixedSize(25,25)
-        self.label_resid = QLabel('RESIDENCIAL/EMPRESA')
-
         self.square_dental = QFrame()
-        self.square_dental.setFixedSize(25,25)
-        self.label_dental = QLabel('SOS DENTAL')
 
+        # Criando os dicionários com os mesmos quadros
+        self.seguros = {
+            'SEGURO PROTEÇÃO COMPLETA': self.square_prot,
+            'ACIDENTE PESSOAL COMPLETO': self.square_acid,
+            'TRANQUILIDADE PREMIADA': self.square_tranq,
+        }
 
-        #Style
+        self.labels_seguros = {
+            'SEGURO PROTEÇÃO COMPLETA': QLabel('SEGURO PROTEÇÃO COMPLETA'),
+            'ACIDENTE PESSOAL COMPLETO': QLabel('ACIDENTE PESSOAL COMPLETO'),
+            'TRANQUILIDADE PREMIADA': QLabel('TRANQUILIDADE PREMIADA'),
+        }
+
+        # Criando os quadrados e rótulos ASSISTÊNCIAS
+        self.assistencias = {
+            'RESIDENCIAL/EMPRESA': self.square_resid,
+            'SOS DENTAL': self.square_dental,
+        }
+
+        self.labels_assist = {
+            'RESIDENCIAL/EMPRESA': QLabel('RESIDENCIAL/EMPRESA'),
+            'SOS DENTAL': QLabel('SOS DENTAL'),
+        }
+
+        # Configuração dos quadrados
+        for frame in list(self.seguros.values()) + list(self.assistencias.values()):
+            frame.setFixedSize(25, 25)
+            frame.setStyleSheet("background-color: #ffffff; border: 2px solid black;")
+
+        # Estilos gerais
         self.setStyleSheet("background-color: #292929;")
         self.label_cpf.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
         self.input_cpf.setStyleSheet("background-color: #ffffff; color: #333333; font-size: 14px; border-radius: 5px; width: 360px; height:20px;")
@@ -52,17 +71,6 @@ class MyWidget(QtWidgets.QWidget):
         self.button_limpar.setStyleSheet("background-color: #D3FF00; color: #333333; font-size: 14px; border-radius: 5px; padding: 5px 10px;font-weight: bold;")
         self.label_seguros.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
         self.label_assist.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
-        self.label_aci_pessoal.setStyleSheet("color: #ffffff;")
-        self.label_prot_completa.setStyleSheet("color: #ffffff;")
-        self.label_tranq.setStyleSheet("color: #ffffff;")
-        self.label_resid.setStyleSheet("color: #ffffff;")
-        self.label_dental.setStyleSheet("color: #ffffff;")
-
-        self.square_prot.setStyleSheet("background-color: #ffffff; border: 2px solid black;")
-        self.square_acid.setStyleSheet("background-color: #ffffff; border: 2px solid black;")        
-        self.square_tranq.setStyleSheet("background-color: #ffffff; border: 2px solid black;")   
-        self.square_resid.setStyleSheet("background-color: #ffffff; border: 2px solid black;")
-        self.square_dental.setStyleSheet("background-color: #ffffff; border: 2px solid black;")   
 
         # Layout Cabeçalho
         layout.addWidget(self.label_cpf)
@@ -70,93 +78,88 @@ class MyWidget(QtWidgets.QWidget):
         layout.addWidget(self.input_cpf)
         layout.addSpacing(5)
 
-        # Layout Buttons
+        # Layout dos botões
         h_layout = QHBoxLayout()
-        h_layout.setSpacing(10) 
+        h_layout.setSpacing(10)
         h_layout.addWidget(self.button_pesquisar)
         h_layout.addWidget(self.button_limpar)
-
-        #layout protecao
-        s_layout = QHBoxLayout()
-        s_layout.setSpacing(10)
-        s_layout.addWidget(self.square_prot)
-        s_layout.addWidget(self.label_prot_completa)
-
-        #layout acidente
-        s1_layout = QHBoxLayout()
-        s1_layout.setSpacing(10)
-        s1_layout.addWidget(self.square_acid)
-        s1_layout.addWidget(self.label_aci_pessoal)
-
-        #layout tranq
-        s2_layout = QHBoxLayout()
-        s2_layout.setSpacing(10)
-        s2_layout.addWidget(self.square_tranq)
-        s2_layout.addWidget(self.label_tranq)
-
-        #layout resid
-        a_layout = QHBoxLayout()
-        a_layout.setSpacing(10)
-        a_layout.addWidget(self.square_resid)
-        a_layout.addWidget(self.label_resid)
-
-        #layout resid
-        a1_layout = QHBoxLayout()
-        a1_layout.setSpacing(10)
-        a1_layout.addWidget(self.square_dental)
-        a1_layout.addWidget(self.label_dental)
 
         layout.addLayout(h_layout)
         layout.addSpacing(10)
         layout.addWidget(QHLine())
         layout.addWidget(self.label_seguros)
         layout.addSpacing(3)
-        layout.addLayout(s_layout)
-        layout.addSpacing(3)
-        layout.addLayout(s1_layout)
-        layout.addSpacing(3)
-        layout.addLayout(s2_layout)
+
+        # Layout dos seguros (SEPARADOS)
+        for nome, frame in self.seguros.items():
+            s_layout = QHBoxLayout()
+            s_layout.setSpacing(10)
+            s_layout.addWidget(frame)
+            s_layout.addWidget(self.labels_seguros[nome])
+            layout.addLayout(s_layout)
+            layout.addSpacing(3)
+
         layout.addSpacing(10)
         layout.addWidget(QHLine())
         layout.addWidget(self.label_assist)
-        layout.addSpacing(3)
-        layout.addLayout(a_layout)
-        layout.addSpacing(3)
-        layout.addLayout(a1_layout)
         layout.addSpacing(10)
 
+        # Layout das assistências (SEPARADAS)
+        for nome, frame in self.assistencias.items():
+            a_layout = QHBoxLayout()
+            a_layout.setSpacing(10)
+            a_layout.addWidget(frame)
+            a_layout.addWidget(self.labels_assist[nome])
+            layout.addLayout(a_layout)
+            layout.addSpacing(3)
 
-        
         self.setLayout(layout)
         self.setWindowTitle('APP VENDAS')
         self.setFixedSize(430, 350)
         font = QtGui.QFont('Geist-Regular', 10)
         self.setFont(font)
 
-        # Logic
+        # Eventos dos botões
         self.button_pesquisar.clicked.connect(self.on_pesquisar)
         self.button_limpar.clicked.connect(self.on_limpar)
-    
+
     def on_pesquisar(self):
-        cpf_input = self.input_cpf.text()
-        if cpf_input:
-            print(f'Pesquisando CPF: {cpf_input}')
-        else:
-            print('Digite um CPF para pesquisar.')
-    
+        cpf_input = self.input_cpf.text().strip()
+        
+        if not cpf_input:
+            QMessageBox.warning(self, 'Aviso', 'Digite um CPF para pesquisar!')
+            return
+
+        resultado = buscar_dados_no_parquet(cpf_input)
+
+        # Reseta todas as cores antes de aplicar novas
+        self.resetar_cores()
+
+        if resultado is not None:
+            for _, row in resultado.iterrows():
+                seguro = row['SEGURO']
+                status = row['STATUS_SEGURO']
+
+                cor = "green" if status.lower() == "ativo" else "red"
+
+                if "PROTEÇÃO COMPLETA" in seguro:
+                    self.square_prot.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+                elif "ACIDENTE PESSOAL" in seguro:
+                    self.square_acid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+                elif "TRANQUILIDADE PREMIADA" in seguro:
+                    self.square_tranq.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+                elif "RESIDENCIAL" in seguro:
+                    self.square_resid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+                elif "DENTAL" in seguro:
+                    self.square_dental.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+
+    def resetar_cores(self):
+        """Reseta a cor dos quadrados para branco"""
+        estilo_padrao = "background-color: white; border: 2px solid black;"
+        
+        for frame in list(self.seguros.values()) + list(self.assistencias.values()):
+            frame.setStyleSheet(estilo_padrao)
+
     def on_limpar(self):
         self.input_cpf.clear()
-
-class QHLine(QFrame):
-    def __init__(self):
-        super().__init__()
-        self.setFrameShape(QFrame.HLine)
-        self.setFrameShadow(QFrame.Sunken)
-        self.setStyleSheet("background-color: white; height: 2px;")
-
-
-if __name__ == "__main__":
-    app = QtWidgets.QApplication(sys.argv)
-    widget = MyWidget()
-    widget.show()
-    sys.exit(app.exec())
+        self.resetar_cores()

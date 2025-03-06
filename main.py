@@ -1,7 +1,6 @@
-from GUI import MyWidget
-from logica import *
-from PySide6 import  QtWidgets
 import sys
+from PySide6 import QtWidgets
+from GUI import MyWidget
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
