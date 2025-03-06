@@ -1,18 +1,18 @@
-# GUI.py
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QHBoxLayout, QFrame
 from PySide6.QtCore import Qt
 import sys
-from logica import on_pesquisar, on_limpar  # Importing the functions from logica.py
+from logica import on_limpar, on_pesquisar
+
 
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
-
+        
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
         layout.setSpacing(5)
-
+        
         # Widgets
         self.label_cpf = QLabel('Digite o CPF:')
         self.label_cpf.setAlignment(Qt.AlignBottom)
@@ -44,18 +44,32 @@ class MyWidget(QtWidgets.QWidget):
         self.label_dental = QLabel('SOS DENTAL')
 
 
-        # Style
+        #Style
         self.setStyleSheet("background-color: #292929;")
         self.label_cpf.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
         self.input_cpf.setStyleSheet("background-color: #ffffff; color: #333333; font-size: 14px; border-radius: 5px; width: 360px; height:20px;")
         self.button_pesquisar.setStyleSheet("background-color: #00C6CC; color: #333333; font-size: 14px; border-radius: 5px; padding: 5px 10px; width: 170px; font-weight: bold; height:20px;")
         self.button_limpar.setStyleSheet("background-color: #D3FF00; color: #333333; font-size: 14px; border-radius: 5px; padding: 5px 10px;font-weight: bold;")
-        
+        self.label_seguros.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
+        self.label_assist.setStyleSheet("color: #ffffff; font-size: 20px; font-weight: bold;")
+        self.label_aci_pessoal.setStyleSheet("color: #ffffff;")
+        self.label_prot_completa.setStyleSheet("color: #ffffff;")
+        self.label_tranq.setStyleSheet("color: #ffffff;")
+        self.label_resid.setStyleSheet("color: #ffffff;")
+        self.label_dental.setStyleSheet("color: #ffffff;")
+
+        self.square_prot.setStyleSheet("background-color: #ffffff; border: 2px solid black;")
+        self.square_acid.setStyleSheet("background-color: #ffffff; border: 2px solid black;")        
+        self.square_tranq.setStyleSheet("background-color: #ffffff; border: 2px solid black;")   
+        self.square_resid.setStyleSheet("background-color: #ffffff; border: 2px solid black;")
+        self.square_dental.setStyleSheet("background-color: #ffffff; border: 2px solid black;")   
+
         # Layout Cabeçalho
         layout.addWidget(self.label_cpf)
         layout.addSpacing(10)
         layout.addWidget(self.input_cpf)
-        
+        layout.addSpacing(5)
+
         # Layout Buttons
         h_layout = QHBoxLayout()
         h_layout.setSpacing(10) 
@@ -93,7 +107,25 @@ class MyWidget(QtWidgets.QWidget):
         a1_layout.addWidget(self.label_dental)
 
         layout.addLayout(h_layout)
-        layout.addStretch(1)
+        layout.addSpacing(10)
+        layout.addWidget(QHLine())
+        layout.addWidget(self.label_seguros)
+        layout.addSpacing(3)
+        layout.addLayout(s_layout)
+        layout.addSpacing(3)
+        layout.addLayout(s1_layout)
+        layout.addSpacing(3)
+        layout.addLayout(s2_layout)
+        layout.addSpacing(10)
+        layout.addWidget(QHLine())
+        layout.addWidget(self.label_assist)
+        layout.addSpacing(3)
+        layout.addLayout(a_layout)
+        layout.addSpacing(3)
+        layout.addLayout(a1_layout)
+        layout.addSpacing(10)
+
+
         
         self.setLayout(layout)
         self.setWindowTitle('APP VENDAS')
@@ -104,12 +136,24 @@ class MyWidget(QtWidgets.QWidget):
         # Logic
         self.button_pesquisar.clicked.connect(self.on_pesquisar)
         self.button_limpar.clicked.connect(self.on_limpar)
-
+    
     def on_pesquisar(self):
-        on_pesquisar(self)
-
+        cpf_input = self.input_cpf.text()
+        if cpf_input:
+            print(f'Pesquisando CPF: {cpf_input}')
+        else:
+            print('Digite um CPF para pesquisar.')
+    
     def on_limpar(self):
         self.input_cpf.clear()
+
+class QHLine(QFrame):
+    def __init__(self):
+        super().__init__()
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)
+        self.setStyleSheet("background-color: white; height: 2px;")
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
