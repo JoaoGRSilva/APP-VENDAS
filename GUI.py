@@ -27,41 +27,48 @@ class MyWidget(QtWidgets.QWidget):
         self.label_seguros = QLabel('Seguros')
         self.label_assist = QLabel('Assistências')
 
-        # Criando os quadros individuais para usar nas verificações
+        # Criando os quadros individuais
         self.square_prot = QFrame()
         self.square_acid = QFrame()
         self.square_tranq = QFrame()
         self.square_resid = QFrame()
         self.square_dental = QFrame()
 
-        # Criando os dicionários com os mesmos quadros
+        # Criando os dicionários de mapeamento para os rótulos
+        substituicoes_seguros = {
+            'COMBO - PROTEÇÃO COMPLETA' : 'SEGURO PROTEÇÃO COMPLETA',
+            'ACIDENTES PESSOAIS + ASSISTÊNCIAS & AFINZ ASSIST FUNERAL' : 'ACIDENTE PESSOAL COMPLETO',
+            'AFINZ SOS DENTAL DIA E NOITE' : 'SOS Dental',
+            'AFINZ ASSIST RESIDENCIAL 24H & RESIDENCIAL PLANO 1' : 'RESIDENCIAL/EMPRESA'
+        }
+
+        # Mapeamento de seguros
         self.seguros = {
             'SEGURO PROTEÇÃO COMPLETA': self.square_prot,
             'ACIDENTE PESSOAL COMPLETO': self.square_acid,
             'TRANQUILIDADE PREMIADA': self.square_tranq,
         }
 
-        self.labels_seguros = {
-            'SEGURO PROTEÇÃO COMPLETA': QLabel('SEGURO PROTEÇÃO COMPLETA'),
-            'ACIDENTE PESSOAL COMPLETO': QLabel('ACIDENTE PESSOAL COMPLETO'),
-            'TRANQUILIDADE PREMIADA': QLabel('TRANQUILIDADE PREMIADA'),
-        }
-
-        # Criando os quadrados e rótulos ASSISTÊNCIAS
+        # Mapeamento de assistências
         self.assistencias = {
             'RESIDENCIAL/EMPRESA': self.square_resid,
             'SOS DENTAL': self.square_dental,
         }
 
-        self.labels_assist = {
-            'RESIDENCIAL/EMPRESA': QLabel('RESIDENCIAL/EMPRESA'),
-            'SOS DENTAL': QLabel('SOS DENTAL'),
+        # Criando os dicionários de rótulos com as substituições
+        self.labels_seguros = {
+            key: QLabel(substituicoes_seguros.get(key, key)) for key in self.seguros.keys()
         }
 
-        # Configuração dos quadrados
+        self.labels_assist = {
+            key: QLabel(substituicoes_seguros.get(key, key)) for key in self.assistencias.keys()
+        }
+
+        # Configuração dos quadros
         for frame in list(self.seguros.values()) + list(self.assistencias.values()):
             frame.setFixedSize(25, 25)
             frame.setStyleSheet("background-color: #ffffff; border: 2px solid black;")
+
 
         # Estilos gerais
         self.setStyleSheet("background-color: #292929;")
@@ -136,22 +143,55 @@ class MyWidget(QtWidgets.QWidget):
         self.resetar_cores()
 
         if resultado is not None:
+            # Se não houver dados, mostre uma mensagem
+            if resultado.empty:
+                QMessageBox.information(self, 'Informação', 'Nenhum seguro encontrado para este CPF!')
+                return
+                
+            # Vamos imprimir no console para diagnóstico
+            print(f"Dados encontrados: {resultado}")
+            
             for _, row in resultado.iterrows():
                 seguro = row['SEGURO']
                 status = row['STATUS_SEGURO']
+                
+                print(f"Verificando: {seguro} - Status: {status}")
 
                 cor = "green" if status.lower() == "ativo" else "red"
-
-                if "PROTEÇÃO COMPLETA" in seguro:
+                
+                # Verificações com termos mais amplos e sem caracteres especiais
+                seguro_upper = seguro.upper()
+                
+                # PROTEÇÃO COMPLETA (também verifica sem cedilha)
+                if "PROTEC" in seguro_upper or "PROTE" in seguro_upper:
+                    print(f"Marcando PROTEÇÃO COMPLETA como {cor}")
                     self.square_prot.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                elif "ACIDENTE PESSOAL" in seguro:
+                
+                # ACIDENTE PESSOAL
+                elif "ACIDENTE" in seguro_upper or "ACID" in seguro_upper:
+                    print(f"Marcando ACIDENTE PESSOAL como {cor}")
                     self.square_acid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                elif "TRANQUILIDADE PREMIADA" in seguro:
+                
+                # TRANQUILIDADE PREMIADA
+                elif "TRANQ" in seguro_upper:
+                    print(f"Marcando TRANQUILIDADE como {cor}")
                     self.square_tranq.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                elif "RESIDENCIAL" in seguro:
+                
+                # RESIDENCIAL/EMPRESA
+                elif "RESID" in seguro_upper or "EMPRESA" in seguro_upper:
+                    print(f"Marcando RESIDENCIAL como {cor}")
                     self.square_resid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                elif "DENTAL" in seguro:
+                
+                # DENTAL
+                elif "DENTAL" in seguro_upper or "SOS" in seguro_upper:
+                    print(f"Marcando DENTAL como {cor}")
                     self.square_dental.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+                
+                # Se é um seguro não mapeado, verifica se é saúde ou outro
+                elif "SAUDE" in seguro_upper or "SAÚDE" in seguro_upper:
+                    print(f"Seguro de SAÚDE detectado, mas não está mapeado nos quadradinhos")
+                else:
+                    print(f"Seguro não mapeado: {seguro}")
 
     def resetar_cores(self):
         """Reseta a cor dos quadrados para branco"""
