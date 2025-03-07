@@ -64,6 +64,9 @@ class MyWidget(QtWidgets.QWidget):
             key: QLabel(substituicoes_seguros.get(key, key)) for key in self.assistencias.keys()
         }
 
+        for ensurance in list(self.labels_seguros.values()) + list(self.labels_assist.values()):
+            ensurance.setStyleSheet("color: #ffffff")
+
         # Configuração dos quadros
         for frame in list(self.seguros.values()) + list(self.assistencias.values()):
             frame.setFixedSize(25, 25)
