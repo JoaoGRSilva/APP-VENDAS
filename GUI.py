@@ -137,7 +137,7 @@ class MyWidget(QtWidgets.QWidget):
         cpf_input = self.input_cpf.text().strip()
         
         if not cpf_input:
-            QMessageBox.warning(self, 'Aviso', 'Digite um CPF para pesquisar!')
+            QMessageBox.information(None, 'Aviso', 'Digite um CPF para pesquisar!')
             return
 
         resultado = buscar_dados_no_parquet(cpf_input)
