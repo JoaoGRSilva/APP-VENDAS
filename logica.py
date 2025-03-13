@@ -34,7 +34,7 @@ def buscar_dados_no_parquet(cpf):
             seguros_cliente = df[df['CPF'] == cpf_sem_zeros]
             
         if seguros_cliente.empty:
-            QMessageBox.information(None, 'Aviso', 'CPF não encontrado na base de dados.')
+            QMessageBox.information(None, 'Aviso', 'Não foi encontrado nenhum seguro para este CPF.')
             return None
             
         return seguros_cliente

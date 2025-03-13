@@ -1,6 +1,7 @@
 from PySide6 import QtCore, QtWidgets, QtGui
 from PySide6.QtWidgets import QLabel, QLineEdit, QPushButton, QHBoxLayout, QFrame, QMessageBox
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QIcon
 from logica import buscar_dados_no_parquet
 
 class QHLine(QFrame):
@@ -13,6 +14,8 @@ class QHLine(QFrame):
 class MyWidget(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+
+        self.setWindowIcon(QIcon("icone.ico"))
 
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(10, 10, 10, 10)
@@ -142,16 +145,14 @@ class MyWidget(QtWidgets.QWidget):
 
         resultado = buscar_dados_no_parquet(cpf_input)
 
-        # Reseta todas as cores antes de aplicar novas
+
         self.resetar_cores()
 
         if resultado is not None:
-            # Se não houver dados, mostre uma mensagem
             if resultado.empty:
                 QMessageBox.information(self, 'Informação', 'Nenhum seguro encontrado para este CPF!')
                 return
                 
-            # Vamos imprimir no console para diagnóstico
             print(f"Dados encontrados: {resultado}")
             
             for _, row in resultado.iterrows():
@@ -161,45 +162,28 @@ class MyWidget(QtWidgets.QWidget):
                 print(f"Verificando: {seguro} - Status: {status}")
 
                 cor = "green" if status.lower() == "ativo" else "red"
-                
-                # Verificações com termos mais amplos e sem caracteres especiais
                 seguro_upper = seguro.upper()
-                
-                # PROTEÇÃO COMPLETA (também verifica sem cedilha)
                 if "PROTEC" in seguro_upper or "PROTE" in seguro_upper:
                     print(f"Marcando PROTEÇÃO COMPLETA como {cor}")
                     self.square_prot.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                
-                # ACIDENTE PESSOAL
                 elif "ACIDENTE" in seguro_upper or "ACID" in seguro_upper:
                     print(f"Marcando ACIDENTE PESSOAL como {cor}")
                     self.square_acid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                
-                # TRANQUILIDADE PREMIADA
                 elif "TRANQ" in seguro_upper:
                     print(f"Marcando TRANQUILIDADE como {cor}")
                     self.square_tranq.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                
-                # RESIDENCIAL/EMPRESA
                 elif "RESID" in seguro_upper or "EMPRESA" in seguro_upper:
                     print(f"Marcando RESIDENCIAL como {cor}")
                     self.square_resid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                
-                # DENTAL
                 elif "DENTAL" in seguro_upper or "SOS" in seguro_upper:
                     print(f"Marcando DENTAL como {cor}")
                     self.square_dental.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
-                
-                # Se é um seguro não mapeado, verifica se é saúde ou outro
-                elif "SAUDE" in seguro_upper or "SAÚDE" in seguro_upper:
-                    print(f"Seguro de SAÚDE detectado, mas não está mapeado nos quadradinhos")
                 else:
+                    QMessageBox.information(None, 'Informação', 'Nenhum seguro encontrado para este CPF!')
                     print(f"Seguro não mapeado: {seguro}")
 
     def resetar_cores(self):
-        """Reseta a cor dos quadrados para branco"""
-        estilo_padrao = "background-color: white; border: 2px solid black;"
-        
+        estilo_padrao = "background-color: white; border: 2px solid black;"       
         for frame in list(self.seguros.values()) + list(self.assistencias.values()):
             frame.setStyleSheet(estilo_padrao)
 
