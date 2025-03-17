@@ -171,6 +171,8 @@ class MyWidget(QtWidgets.QWidget):
                     self.square_resid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 elif "DENTAL" in seguro_upper or "SOS" in seguro_upper:
                     self.square_dental.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+                elif "SAUDE" in seguro_upper or "SUPER" in seguro_upper:
+                    QMessageBox.information(None, 'Informação', 'Nenhum seguro encontrado para este CPF!')
                 else:
                     pass
 
