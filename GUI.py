@@ -150,10 +150,8 @@ class MyWidget(QtWidgets.QWidget):
 
         if resultado is not None:
             if resultado.empty:
-                QMessageBox.information(self, 'Informação', 'Nenhum seguro encontrado para este CPF!')
+                QMessageBox.information(None, 'Informação', 'Nenhum seguro encontrado para este CPF!')
                 return
-                
-            print(f"Dados encontrados: {resultado}")
             
             for _, row in resultado.iterrows():
                 seguro = row['SEGURO']
@@ -164,23 +162,17 @@ class MyWidget(QtWidgets.QWidget):
                 cor = "green" if status.lower() == "ativo" else "red"
                 seguro_upper = seguro.upper()
                 if "PROTEC" in seguro_upper or "PROTE" in seguro_upper:
-                    print(f"Marcando PROTEÇÃO COMPLETA como {cor}")
                     self.square_prot.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 elif "ACIDENTE" in seguro_upper or "ACID" in seguro_upper:
-                    print(f"Marcando ACIDENTE PESSOAL como {cor}")
                     self.square_acid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 elif "TRANQ" in seguro_upper:
-                    print(f"Marcando TRANQUILIDADE como {cor}")
                     self.square_tranq.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 elif "RESID" in seguro_upper or "EMPRESA" in seguro_upper:
-                    print(f"Marcando RESIDENCIAL como {cor}")
                     self.square_resid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 elif "DENTAL" in seguro_upper or "SOS" in seguro_upper:
-                    print(f"Marcando DENTAL como {cor}")
                     self.square_dental.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 else:
-                    QMessageBox.information(None, 'Informação', 'Nenhum seguro encontrado para este CPF!')
-                    print(f"Seguro não mapeado: {seguro}")
+                    pass
 
     def resetar_cores(self):
         estilo_padrao = "background-color: white; border: 2px solid black;"       
