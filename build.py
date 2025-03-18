@@ -7,7 +7,7 @@ PyInstaller.__main__.run([
     '--noconsole',  # não mostra o console ao executar
     '--name=Consulta de Seguros',  # nome do executável
     '--windowed',  # aplicação com interface gráfica (sem terminal)
-    '--icon=icone.ico',  # Caminho para o ícone do seu aplicativo
+    '--icon=icon.ico',  # Caminho para o ícone do seu aplicativo
     '--hidden-import=PySide6.QtCore',
     '--hidden-import=PySide6.QtGui',
     '--hidden-import=PySide6.QtWidgets',

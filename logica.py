@@ -9,7 +9,7 @@ def buscar_dados_no_parquet(cpf):
         return None
 
     # Verificar se as colunas necessárias existem
-    colunas_requeridas = ['CPF', 'SEGURO', 'STATUS_SEGURO']
+    colunas_requeridas = ['CPF', 'SEGURO', 'STATUS_SEGURO', 'IDADE']
     for coluna in colunas_requeridas:
         if coluna not in df.columns:
             QMessageBox.critical(None, 'Erro', f'A coluna {coluna} não foi encontrada na base de dados!')
