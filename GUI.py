@@ -45,6 +45,7 @@ class MyWidget(QtWidgets.QWidget):
         self.square_tranq = QFrame()
         self.square_resid = QFrame()
         self.square_dental = QFrame()
+        self.square_saude = QFrame()
 
         # Criando os dicionários de mapeamento para os rótulos
         substituicoes_seguros = {
@@ -65,6 +66,7 @@ class MyWidget(QtWidgets.QWidget):
         self.assistencias = {
             'RESIDENCIAL/EMPRESA': self.square_resid,
             'SOS DENTAL': self.square_dental,
+            'VOCE BEM SAUDE SUPER': self.square_saude
         }
 
         # Criando os dicionários de rótulos com as substituições
@@ -113,7 +115,7 @@ class MyWidget(QtWidgets.QWidget):
         idade_layout = QHBoxLayout()
         idade_layout.addWidget(self.label_idade_titulo)
         idade_layout.addWidget(self.label_idade_valor)
-        idade_layout.addStretch()  # Adiciona espaço flexível à direita
+        idade_layout.addStretch()
         layout.addLayout(idade_layout)
         
         layout.addSpacing(5)
@@ -196,7 +198,7 @@ class MyWidget(QtWidgets.QWidget):
 
         self.setLayout(layout)
         self.setWindowTitle('APP VENDAS')
-        self.setFixedSize(430, 400)  # Mantendo o tamanho da janela
+        self.setFixedSize(430, 450)  # Mantendo o tamanho da janela
         font = QtGui.QFont('Geist-Regular', 10)
         self.setFont(font)
 
@@ -245,8 +247,10 @@ class MyWidget(QtWidgets.QWidget):
                     self.square_resid.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 elif "DENTAL" in seguro_upper or "SOS" in seguro_upper:
                     self.square_dental.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
+                elif "SAUDE" in seguro_upper or "SUPER" in seguro_upper:
+                    self.square_saude.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 else:
-                    pass
+                    QMessageBox.information(None, 'Informação', 'Nenhum seguro encontrado para este CPF!')
 
                 if idade_cliente > 65:
                     self.square_prot.setStyleSheet("background-color: #292929; border: 2px solid black;")
