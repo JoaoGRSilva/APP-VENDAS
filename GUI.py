@@ -250,9 +250,10 @@ class MyWidget(QtWidgets.QWidget):
                 elif "SAUDE" in seguro_upper or "SUPER" in seguro_upper:
                     self.square_saude.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 else:
-                    QMessageBox.information(None, 'Informação', 'Nenhum seguro encontrado para este CPF!')
+                    pass
+                
 
-                if idade_cliente > 65:
+                if idade_cliente > 64:
                     self.square_prot.setStyleSheet("background-color: #292929; border: 2px solid black;")
                     self.square_acid.setStyleSheet("background-color: #292929; border: 2px solid black;")
                     self.square_tranq.setStyleSheet("background-color: #292929; border: 2px solid black;")
