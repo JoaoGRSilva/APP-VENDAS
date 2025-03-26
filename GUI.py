@@ -226,16 +226,9 @@ class MyWidget(QtWidgets.QWidget):
             for _, row in resultado.iterrows():
                 seguro = row['SEGURO']
                 status = row['STATUS_SEGURO']
-
                 idade_cliente = row['IDADE']
                 self.label_idade_valor.setText(f"{idade_cliente}")
-
-
-                print(f"Verificando: {seguro} - Status: {status}")
-
                 cor = "green" if status.lower() == "ativo" else "red"
-
-
                 seguro_upper = seguro.upper()
                 if "PROTEC" in seguro_upper or "PROTE" in seguro_upper:
                     self.square_prot.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
@@ -250,15 +243,11 @@ class MyWidget(QtWidgets.QWidget):
                 elif "SAUDE" in seguro_upper or "SUPER" in seguro_upper:
                     self.square_saude.setStyleSheet(f"background-color: {cor}; border: 2px solid black;")
                 else:
-                    pass
-                
+                    pass     
 
                 if idade_cliente > 64:
                     self.square_prot.setStyleSheet("background-color: #292929; border: 2px solid black;")
-                    self.square_acid.setStyleSheet("background-color: #292929; border: 2px solid black;")
-                    self.square_tranq.setStyleSheet("background-color: #292929; border: 2px solid black;")
-                
-
+                    self.square_acid.setStyleSheet("background-color: #292929; border: 2px solid black;")             
 
     def resetar_cores(self):
         estilo_padrao = "background-color: white; border: 2px solid black;"       
