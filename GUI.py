@@ -245,7 +245,7 @@ class MyWidget(QtWidgets.QWidget):
                 else:
                     pass     
 
-                if idade_cliente > 64:
+                if idade_cliente > 63:
                     self.square_prot.setStyleSheet("background-color: #292929; border: 2px solid black;")
                     self.square_acid.setStyleSheet("background-color: #292929; border: 2px solid black;")             
 
@@ -257,5 +257,5 @@ class MyWidget(QtWidgets.QWidget):
 
     def on_limpar(self):
         self.input_cpf.clear()
-        self.label_idade_valor.setText('--')  # Resetando o valor da idade
+        self.label_idade_valor.setText('--') 
         self.resetar_cores()
